@@ -117,7 +117,17 @@ func main() {
 		case 6:
 			fmt.Println("HEHe")
 		case 7:
-			fmt.Println("HEHe")
+			var transfers string
+			var transfers2 string
+			var transferb int64
+			fmt.Print("masukan hp user pengirim :")
+			fmt.Scanln(&transfers)
+			fmt.Print("masukan hp user penerima :")
+			fmt.Scanln(&transfers2)
+			fmt.Print("masukan jumlah transfer :")
+			fmt.Scanln(&transferb)
+
+			success, err := users.Transfer(database, transfers, transfers2, transferb)
 		case 8:
 			fmt.Println("HEHe")
 		case 9:
@@ -148,6 +158,7 @@ func main() {
 		case 0:
 
 			fmt.Println("HEHe")
+			input = 99
 		}
 	}
 	// fmt.Println("Exited! Thank you")

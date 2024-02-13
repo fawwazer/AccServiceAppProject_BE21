@@ -1,26 +1,48 @@
 package users
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 type Users struct {
-	HP       string
-	Nama     string
-	Password string
-	Alamat   string
+	HP           uint `gorm:"primaryKey"`
+	Nama         string
+	Password     string
+	Alamat       string
+	Userbalances []UserBalance
 }
 
 type UserBalance struct {
 	gorm.Model
-	Balance 	int64
-	UserID 		uint
+	Balance   int64  //nilai saldo sekarang
+	UsersID   uint   // foreign key users
+	Transaksi string //keterangan top up / transfer
+	Nilai     int64  //histori berapa uang keluar atau masuk
 }
 
-type History struct {
-	gorm.Model
-	Transaksi		string
-	Nilai			int64
-	Detail			string
-	UserBalanceID 	uint
+func (u *Users) Transfer(connection *gorm.DB, user1 *Users, user2 *Users, balance int64) {
+
+	var user1Balance, user2Balance int64
+
+	// Retrieve balance for user1
+	connection.Model(user1).Association("Userbalances").Find(&user1.Userbalances)
+	for _, ub := range user1.Userbalances {
+		user1Balance += ub.Balance
+	}
+
+	// Retrieve balance for user2
+	connection.Model(user2).Association("Userbalances").Find(&user2.Userbalances)
+	for _, ub := range user2.Userbalances {
+		user2Balance += ub.Balance
+	}
+
+	// Subtract user2's balance from user1's balance
+	resultbalance := user1Balance - user2Balance
+
+	// Now resultbalance contains the difference between user1's and user2's balances
+	fmt.Printf("Resulting balance after transfer: %d\n", resultbalance)
 }
 
 func Login(connection *gorm.DB, hp string, password string) (Users, error) {
@@ -51,7 +73,7 @@ func (u *Users) GantiPassword(connection *gorm.DB, newPassword string) (bool, er
 	return query.RowsAffected > 0, nil
 }
 
-func (u *Users) DeleteAcc(connection *gorm.DB, hp string) (bool, error) {
+func (u *Users) DeleteAcc(connection *gorm.DB, hp uint) (bool, error) {
 	query := connection.Table("users").Where("hp = ?", hp).Delete(hp)
 	if err := query.Error; err != nil {
 		return false, err
