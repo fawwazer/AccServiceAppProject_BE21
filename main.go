@@ -90,17 +90,22 @@ func main() {
 				}
 			}
 		case 4:
-			var newPassword users.Users
+			var newh users.Users
 			fmt.Print("Masukkan Nomor HP: ")
-			fmt.Scanln(&newPassword.HP)
+			fmt.Scanln(&newh.HP)
 			fmt.Print("Masukkan Password Baru: ")
-			fmt.Scanln(&newPassword.Password)
-			success, err := newPassword.GantiPassword(database, newPassword.Password)
+			fmt.Scanln(&newh.Password)
+			fmt.Print("Masukkan nama baru: ")
+			fmt.Scanln(&newh.Nama)
+			fmt.Print("Masukkan alamat baru: ")
+			fmt.Scanln(&newh.Alamat)
+
+			success, err := newh.UpdateAcc(database, newh.HP, newh.Password, newh.Nama, newh.Alamat)
 			if err != nil {
-				fmt.Println("Terjadi kesalahan(tidak bisa mendaftarkan pengguna)", err.Error())
+				fmt.Println("Terjadi kesalahan (tidak bisa mengupdate akun):", err.Error())
 			}
 			if success {
-				fmt.Println("Selamat Account Telah Terupdate")
+				fmt.Println("Selamat, Akun Telah Terupdate")
 			}
 		case 5:
 			var deleteAccount users.Users
@@ -147,6 +152,7 @@ func main() {
 		case 0:
 
 			fmt.Println("HEHe")
+			input = 99
 		}
 	}
 	// fmt.Println("Exited! Thank you")
