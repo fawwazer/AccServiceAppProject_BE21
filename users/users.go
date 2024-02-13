@@ -9,6 +9,20 @@ type Users struct {
 	Alamat   string
 }
 
+type UserBalance struct {
+	gorm.Model
+	Balance 	int64
+	UserID 		uint
+}
+
+type History struct {
+	gorm.Model
+	Transaksi		string
+	Nilai			int64
+	Detail			string
+	UserBalanceID 	uint
+}
+
 func Login(connection *gorm.DB, hp string, password string) (Users, error) {
 	var result Users
 	err := connection.Where("hp = ? AND password = ?", hp, password).First(&result).Error
