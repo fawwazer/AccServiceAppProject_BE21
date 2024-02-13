@@ -1,7 +1,7 @@
 package config
 
 import (
-	"Alterra/ALTA_BE21_Rizal/AccServiceProject_BE21/users"
+	"AccServiceProject_BE21/AccServiceProject_BE21/users"
 	"fmt"
 
 	"gorm.io/driver/mysql"

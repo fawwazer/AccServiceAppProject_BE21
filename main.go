@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Alterra/ALTA_BE21_Rizal/AccServiceProject_BE21/config"
-	"Alterra/ALTA_BE21_Rizal/AccServiceProject_BE21/users"
+	"AccServiceProject_BE21/config"
+	"AccServiceProject_BE21/users"
 	"fmt"
 )
 
