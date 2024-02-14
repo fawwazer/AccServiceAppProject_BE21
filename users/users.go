@@ -22,6 +22,51 @@ type UserBalance struct {
 	Nilai     int64  //histori berapa uang keluar atau masuk
 }
 
+func (ub *UserBalance) GetBalance(connection *gorm.DB, userid uint) (UserBalance, error) {
+	// var result uint
+	var user UserBalance
+	err := connection.Where("users_id = ?", userid).Last(&user).Error
+	if err != nil {
+		return UserBalance{}, err
+	}
+	return user, nil
+}
+
+func (ub *UserBalance) TopUp(connection *gorm.DB, hp uint, amount int64) (bool, error) {
+	// var user UserBalance
+	ub.Balance += amount // balance terbaru ditambah amount akan tersimpan di balance
+	// query := connection.Table("user_balances").Where(Users{"hp = ?", hp}).Update("balance", ub.Balance)
+	// query := connection.Model(&Users{HP: hp}).Updates(UserBalance{Balance: updateBalance})
+	// if connection.Table("user_balances").Where("users_id = ? AND transaksi = ?", hp, "topup").First(&result) {
+
+	// }
+	// if err := connection.Table("user_balances").Where("users_id = ? AND transaksi = ?", hp, "topup").First(&user).Error; err != nil {
+	// 	if err == gorm.ErrRecordNotFound {
+	// 		user := UserBalance{Balance: updateBalance, UsersID: hp, Transaksi: "topup", Nilai: amount}
+	// 		query := connection.Select("Balance", "UsersID", "Transaksi", "Nilai").Create(&user)
+	// 		if err := query.Error; err != nil {
+	// 			return false, err
+	// 		}
+	// 		return query.RowsAffected > 0, nil
+	// 	} else {
+	// 		user := UserBalance{Balance: updateBalance, Nilai: amount}
+	// 		query := connection.Model(&user).Updates(UserBalance{Balance: updateBalance, Nilai: amount})
+	// 		if err := query.Error; err != nil {
+	// 			return false, err
+	// 		}
+	// 		return query.RowsAffected > 0, nil
+	// 	}
+	// }
+
+	user := UserBalance{Balance: ub.Balance, UsersID: hp, Transaksi: "topup", Nilai: amount}
+	query := connection.Select("Balance", "UsersID", "Transaksi", "Nilai").Create(&user)
+	if err := query.Error; err != nil {
+		return false, err
+	}
+
+	return query.RowsAffected > 0, nil
+}
+
 func (u *Users) Transfer(connection *gorm.DB, user1 *Users, user2 *Users, balance int64) {
 
 	var user1Balance, user2Balance int64
@@ -45,7 +90,7 @@ func (u *Users) Transfer(connection *gorm.DB, user1 *Users, user2 *Users, balanc
 	fmt.Printf("Resulting balance after transfer: %d\n", resultbalance)
 }
 
-func Login(connection *gorm.DB, hp string, password string) (Users, error) {
+func Login(connection *gorm.DB, hp uint, password string) (Users, error) {
 	var result Users
 	err := connection.Where("hp = ? AND password = ?", hp, password).First(&result).Error
 	if err != nil {

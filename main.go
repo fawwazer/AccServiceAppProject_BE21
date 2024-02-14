@@ -47,17 +47,20 @@ func main() {
 		case 2:
 			var isRunning bool = true
 			for isRunning {
-				var hp string
+				var hp uint
 				var password string
 				var loggedIn users.Users
+				var saldoExist users.UserBalance
 				fmt.Println("Masukkan HP")
 				fmt.Scanln(&hp)
 				fmt.Println("Masukkan Password")
 				fmt.Scanln(&password)
 				loggedIn, err := users.Login(database, hp, password)
+				success, err := saldoExist.GetBalance(database, hp)
 				if err == nil {
 					var inputLogin int
 					fmt.Println("Selamat Datang,", loggedIn.Nama)
+					fmt.Println("Saldo: ", success.Balance)
 					fmt.Println("Pilih Menu Kamu")
 					fmt.Println("1. Logout")
 					fmt.Print("Masukkan pilihan:")
@@ -72,7 +75,7 @@ func main() {
 			for isRunning {
 				var hp string
 				var seeAcc users.Users
-				fmt.Println("Untuk Melihat User Lain Mohon Input No HP")
+				fmt.Println("Untuk Melihat Profile Mohon Input No HP")
 				fmt.Println("Masukkan No HP: ")
 				fmt.Scanln(&hp)
 				seeAcc, err := users.SeeAnotherAcc(database, hp)
@@ -115,7 +118,19 @@ func main() {
 				fmt.Println("Account Telah Dihapus!")
 			}
 		case 6:
-			fmt.Println("HEHe")
+			var hp uint
+			var nominal int64
+			var ub users.UserBalance
+			fmt.Print("Masukkan Nomor Hp: ")
+			fmt.Scanln(&hp)
+			fmt.Print("Masukkan Nominal: ")
+			fmt.Scanln(&nominal)
+			success, err := ub.TopUp(database, hp, nominal)
+			if err != nil {
+				fmt.Println("terjadi kesalahan(tidak bisa top up)", err.Error())
+			} else if success {
+				fmt.Println("Top up Berhasil")
+			}
 		case 7:
 			var transfers string
 			var transfers2 string
@@ -127,7 +142,7 @@ func main() {
 			fmt.Print("masukan jumlah transfer :")
 			fmt.Scanln(&transferb)
 
-			success, err := users.Transfer(database, transfers, transfers2, transferb)
+			// success, err := users.Transfer(database, transfers, transfers2, transferb)
 		case 8:
 			fmt.Println("HEHe")
 		case 9:
