@@ -235,9 +235,11 @@ func Historytransfer(connection *gorm.DB, hp string) (string, error) {
 }
 
 func SumBalance(userbalances []UserBalance) int64 {
+	// fmt.Println(userbalances)
 	var sum int64
 	for _, ub := range userbalances {
-		sum += ub.Balance
+		sum += ub.Nilai
+
 	}
 	return sum
 }
