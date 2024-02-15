@@ -182,3 +182,23 @@ func SeeAnotherAcc(connection *gorm.DB, hp string) (Users, int64, error) {
 	// Return the user's data and 0 balance if no balance records are found
 	return user, 0, nil
 }
+
+func Historytopup(connection *gorm.DB, hp string) (Users, error) {
+	var result Users
+
+	// Fetch the user's data including their balance records
+	err := connection.Where("hp = ?", hp).Preload("Userbalances").First(&result).Error
+	if err != nil {
+		return Users{}, err
+	}
+
+	return result, nil
+}
+
+func SumBalance(userbalances []UserBalance) int64 {
+	var sum int64
+	for _, ub := range userbalances {
+		sum += ub.Balance
+	}
+	return sum
+}
