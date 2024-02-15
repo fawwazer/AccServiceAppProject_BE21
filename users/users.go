@@ -2,6 +2,7 @@ package users
 
 import (
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -183,16 +184,54 @@ func SeeAnotherAcc(connection *gorm.DB, hp string) (Users, int64, error) {
 	return user, 0, nil
 }
 
-func Historytopup(connection *gorm.DB, hp string) (Users, error) {
+func Historytopup(connection *gorm.DB, hp string) (string, error) {
 	var result Users
 
-	// Fetch the user's data including their balance records
 	err := connection.Where("hp = ?", hp).Preload("Userbalances").First(&result).Error
 	if err != nil {
-		return Users{}, err
+		return "", err
 	}
 
-	return result, nil
+	var history string
+
+	for _, ub := range result.Userbalances {
+
+		if ub.Transaksi == "topup" {
+
+			transactionTime := ub.CreatedAt.Format("2006-01-02 15:04:05")
+			description := fmt.Sprintf("pada tanggal dan jam: %s, %d", transactionTime, ub.Nilai)
+
+			history += description + "\n"
+		}
+
+	}
+
+	return history, nil
+}
+
+func Historytransfer(connection *gorm.DB, hp string) (string, error) {
+	var result Users
+
+	err := connection.Where("hp = ?", hp).Preload("Userbalances").First(&result).Error
+	if err != nil {
+		return "", err
+	}
+
+	var history string
+
+	for _, ub := range result.Userbalances {
+
+		if ub.Transaksi == "transfer" {
+
+			transactionTime := ub.CreatedAt.Format("2006-01-02 15:04:05")
+			description := fmt.Sprintf("pada tanggal dan jam: %s, %d", transactionTime, ub.Nilai)
+
+			history += description + "\n"
+		}
+
+	}
+
+	return history, nil
 }
 
 func SumBalance(userbalances []UserBalance) int64 {

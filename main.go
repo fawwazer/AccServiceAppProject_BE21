@@ -188,7 +188,7 @@ func main() {
 					if err == nil {
 						var inputLogin int
 						fmt.Println("Berikut Data History User Tersebut: ")
-						fmt.Println("Balance:", balance, "/t")
+						fmt.Println("Balance:", balance)
 						fmt.Println()
 						fmt.Println("Silahkan kembali ke menu dengan mengetik angka 1")
 						fmt.Print("Masukkan angka:")
@@ -200,7 +200,37 @@ func main() {
 				}
 			}
 		case 9:
-			fmt.Println("HEHe")
+			var isRunning bool = true
+			for isRunning {
+				var hp string
+				var History users.Users
+				fmt.Println("Untuk Melihat User Lain Mohon Input No HP")
+				fmt.Println("Masukkan No HP: ")
+				fmt.Scanln(&hp)
+				History, balance, err := users.SeeAnotherAcc(database, hp)
+				if err == nil {
+					balance = users.SumBalance(History.Userbalances)
+					fmt.Println("Berikut Data User Tersebut: ")
+					fmt.Println("Nama: ", History.Nama)
+					fmt.Println("Nomor HP: ", History.HP)
+					fmt.Println("Alamat: ", History.Alamat)
+					fmt.Println("Balance:", balance)
+					fmt.Println()
+					balance, err := users.Historytransfer(database, hp)
+					if err == nil {
+						var inputLogin int
+						fmt.Println("Berikut Data History User Tersebut: ")
+						fmt.Println("Balance:", balance)
+						fmt.Println()
+						fmt.Println("Silahkan kembali ke menu dengan mengetik angka 1")
+						fmt.Print("Masukkan angka:")
+						fmt.Scanln(&inputLogin)
+						if inputLogin == 1 {
+							isRunning = false
+						}
+					}
+				}
+			}
 		case 10:
 			var isRunning bool = true
 			for isRunning {
