@@ -2,7 +2,9 @@ package users
 
 import (
 	"fmt"
+	"time"
 
+	// "go.starlark.net/lib/time"
 	"gorm.io/gorm"
 )
 
@@ -20,6 +22,31 @@ type UserBalance struct {
 	UsersID   uint   // foreign key users
 	Transaksi string //keterangan top up / transfer
 	Nilai     int64  //histori berapa uang keluar atau masuk
+}
+
+var results []struct {
+	Nama      string
+	CreatedAt time.Time
+	Transaksi string
+	Nilai     int64
+}
+
+func (ub *UserBalance) TopUpHistory(connection *gorm.DB, userid uint) (UserBalance, error) {
+	var result UserBalance
+	err := connection.Model(&UserBalance{}).Select("users.nama, user_balances.created_at, user_balances.transaksi, user_balances.nilai").
+		Joins("INNER JOIN users ON users.hp = user_balances.users_id").
+		Where("user_balances.users_id = ?", userid).
+		Find(&result).
+		Error
+	if err != nil {
+		return UserBalance{}, err
+	}
+	// for _, result := range results {
+	// 	// Lakukan sesuatu dengan setiap baris data
+	// 	fmt.Printf("Nama: %s, Created At: %s, Transaksi: %s, Nilai: %d\n", result.Nama, result.CreatedAt, result.Transaksi, result.Nilai)
+	// }
+
+	return result, nil
 }
 
 func (ub *UserBalance) GetBalance(connection *gorm.DB, userid uint) (UserBalance, error) {

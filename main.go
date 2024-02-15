@@ -144,7 +144,26 @@ func main() {
 
 			// success, err := users.Transfer(database, transfers, transfers2, transferb)
 		case 8:
-			fmt.Println("HEHe")
+			var isRunning bool = true
+			if isRunning {
+				var history users.UserBalance
+				fmt.Print("Masukkan Nomor HP: ")
+				fmt.Scan(&history.UsersID)
+				success, err := history.TopUpHistory(database, history.UsersID)
+				if err == nil {
+					var inputTopup int
+					fmt.Println("Berikut History TopUp Kamu:")
+					fmt.Println("Nama: ", success.UsersID, "Nominal: ", success.Nilai, "Jenis Transaksi: ", success.Transaksi,
+						"Waktu: ", success.CreatedAt)
+					fmt.Println("Silahkan kembali ke menu dengan mengetik angka 1")
+					fmt.Print("Masukkan angka:")
+					fmt.Scanln(&inputTopup)
+					if inputTopup == 1 {
+						isRunning = false
+					}
+				}
+			}
+
 		case 9:
 			fmt.Println("HEHe")
 		case 10:
