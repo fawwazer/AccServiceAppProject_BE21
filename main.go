@@ -10,6 +10,7 @@ import (
 func main() {
 	database := config.InitMysql()
 	config.Migrate(database)
+	connection := database
 	var input int
 	for input != 99 {
 		fmt.Println("Pilih menu")
@@ -75,13 +76,14 @@ func main() {
 				fmt.Println("Untuk Melihat User Lain Mohon Input No HP")
 				fmt.Println("Masukkan No HP: ")
 				fmt.Scanln(&hp)
-				seeAcc, err := users.SeeAnotherAcc(database, hp)
+				seeAcc, balance, err := users.SeeAnotherAcc(database, hp)
 				if err == nil {
 					var inputLogin int
 					fmt.Println("Berikut Data User Tersebut: ")
 					fmt.Println("Nama: ", seeAcc.Nama)
 					fmt.Println("Nomor HP: ", seeAcc.HP)
 					fmt.Println("Alamat: ", seeAcc.Alamat)
+					fmt.Println("Balance:", balance)
 					fmt.Println("Silahkan kembali ke menu dengan mengetik angka 1")
 					fmt.Print("Masukkan angka:")
 					fmt.Scanln(&inputLogin)
@@ -115,7 +117,19 @@ func main() {
 				fmt.Println("Account Telah Dihapus!")
 			}
 		case 6:
-			fmt.Println("HEHe")
+			var hp uint
+			var nominal int64
+			var ub users.UserBalance
+			fmt.Print("Masukkan Nomor Hp: ")
+			fmt.Scanln(&hp)
+			fmt.Print("Masukkan Nominal: ")
+			fmt.Scanln(&nominal)
+			success, err := ub.TopUp(database, hp, nominal)
+			if err != nil {
+				fmt.Println("terjadi kesalahan(tidak bisa top up)", err.Error())
+			} else if success {
+				fmt.Println("Top up Berhasil")
+			}
 		case 7:
 			var transfers string
 			var transfers2 string
@@ -127,7 +141,28 @@ func main() {
 			fmt.Print("masukan jumlah transfer :")
 			fmt.Scanln(&transferb)
 
-			success, err := users.Transfer(database, transfers, transfers2, transferb)
+			user1, err := users.GetUserByHP(database, transfers)
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+			user2, err := users.GetUserByHP(database, transfers2)
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+
+			success, err := users.Transfer(connection, user1, user2, transferb)
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+
+			if success {
+				fmt.Println("Transfer successful!")
+			} else {
+				fmt.Println("Transfer failed.")
+			}
 		case 8:
 			fmt.Println("HEHe")
 		case 9:
@@ -140,13 +175,14 @@ func main() {
 				fmt.Println("Untuk Melihat User Lain Mohon Input No HP")
 				fmt.Println("Masukkan No HP: ")
 				fmt.Scanln(&hp)
-				seeAcc, err := users.SeeAnotherAcc(database, hp)
+				seeAcc, balance, err := users.SeeAnotherAcc(database, hp)
 				if err == nil {
 					var inputLogin int
 					fmt.Println("Berikut Data User Tersebut: ")
 					fmt.Println("Nama: ", seeAcc.Nama)
 					fmt.Println("Nomor HP: ", seeAcc.HP)
 					fmt.Println("Alamat: ", seeAcc.Alamat)
+					fmt.Println("Balance:", balance)
 					fmt.Println("Silahkan kembali ke menu dengan mengetik angka 1")
 					fmt.Print("Masukkan angka:")
 					fmt.Scanln(&inputLogin)
