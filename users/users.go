@@ -32,7 +32,7 @@ func (ub *UserBalance) GetBalance(connection *gorm.DB, userid uint) (UserBalance
 	}
 	return user, nil
 }
-func GetUserByHP(connection *gorm.DB, hp string) (*Users, error) {
+func GetUserByHP(connection *gorm.DB, hp uint) (*Users, error) {
 	var user Users
 	if err := connection.Where("hp = ?", hp).Preload("Userbalances").First(&user).Error; err != nil {
 		return nil, err

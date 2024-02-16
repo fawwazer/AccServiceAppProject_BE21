@@ -89,8 +89,8 @@ func main() {
 					// Update Account logic
 					// Implement the logic here
 					var newh users.Users
-					fmt.Print("Masukkan Nomor HP: ")
-					fmt.Scanln(&newh.HP)
+					fmt.Print("Nomor HP: ", loggedIn.HP)
+					newh.HP = loggedIn.HP
 					fmt.Print("Masukkan Password Baru: ")
 					fmt.Scanln(&newh.Password)
 					fmt.Print("Masukkan nama baru: ")
@@ -109,23 +109,42 @@ func main() {
 					// Delete Account logic
 					// Implement the logic here
 					var deleteAccount users.Users
+					var pilih int8
+					deleteAccount.HP = loggedIn.HP
 					fmt.Print("Masukkan Nomor HP: ")
-					fmt.Scanln(&deleteAccount.HP)
-					success, err := deleteAccount.DeleteAcc(database, deleteAccount.HP)
-					if err != nil {
-						fmt.Println("Terjadi kesalahan(tidak bisa mendaftarkan pengguna)", err.Error())
+					fmt.Println("1. Yes")
+					fmt.Println("2. No")
+					fmt.Scanln(&pilih)
+					if pilih == 1 {
+						success, err := deleteAccount.DeleteAcc(database, deleteAccount.HP)
+
+						if err != nil {
+							fmt.Println("Terjadi kesalahan(tidak bisa mendaftarkan pengguna)", err.Error())
+						}
+						if success {
+							fmt.Println("Account Telah Dihapus!")
+						}
+					} else {
+						var isRunning bool = true
+						for isRunning {
+							var inputLogin int
+							fmt.Println("Silahkan kembali ke menu dengan mengetik angka 1")
+							fmt.Print("Masukkan angka:")
+							fmt.Scanln(&inputLogin)
+							if inputLogin == 1 {
+								isRunning = false
+							}
+						}
 					}
-					if success {
-						fmt.Println("Account Telah Dihapus!")
-					}
+
 				case 4:
 					// Top Up logic
 					// Implement the logic here
 					var hp uint
 					var nominal int64
 					var ub users.UserBalance
-					fmt.Print("Masukkan Nomor Hp: ")
-					fmt.Scanln(&hp)
+					fmt.Print("Nomor Hp: ", loggedIn.HP)
+					hp = loggedIn.HP
 					fmt.Print("Masukkan Nominal: ")
 					fmt.Scanln(&nominal)
 					success, err := ub.TopUp(database, hp, nominal)
@@ -137,11 +156,11 @@ func main() {
 				case 5:
 					// Transfer logic
 					// Implement the logic here
-					var transfers string
-					var transfers2 string
+					var transfers uint
+					var transfers2 uint
 					var transferb int64
-					fmt.Print("masukan hp user pengirim :")
-					fmt.Scanln(&transfers)
+					fmt.Print("hp user saya :", loggedIn.HP)
+					transfers = loggedIn.HP
 					fmt.Print("masukan hp user penerima :")
 					fmt.Scanln(&transfers2)
 					fmt.Print("masukan jumlah transfer :")
@@ -174,10 +193,11 @@ func main() {
 					// Implement the logic here
 					var isRunning bool = true
 					for isRunning {
-						var hp string
+						var hp uint
 						var History users.Users
 						fmt.Println("Untuk Melihat User Lain Mohon Input No HP")
 						fmt.Println("Masukkan No HP: ")
+						hp = loggedIn.HP
 						fmt.Scanln(&hp)
 						History, balance, err := users.SeeAnotherAcc(database, hp)
 						if err == nil {
@@ -208,11 +228,10 @@ func main() {
 					// Implement the logic here
 					var isRunning bool = true
 					for isRunning {
-						var hp string
+						var hp uint
 						var History users.Users
 						fmt.Println("Untuk Melihat User Lain Mohon Input No HP")
-						fmt.Println("Masukkan No HP: ")
-						fmt.Scanln(&hp)
+						hp = loggedIn.HP
 						History, balance, err := users.SeeAnotherAcc(database, hp)
 						if err == nil {
 							balance = users.SumBalance(History.Userbalances)
