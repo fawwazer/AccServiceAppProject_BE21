@@ -69,20 +69,30 @@ func main() {
 				switch choice {
 				case 1:
 					// My Account logic
-					balance := users.SumBalance(loggedIn.Userbalances)
-					fmt.Println("Nama:", loggedIn.Nama)
-					fmt.Println("Nomor HP:", loggedIn.HP)
-					fmt.Println("Alamat:", loggedIn.Alamat)
-					fmt.Println("Balance:", balance)
-
 					var isRunning bool = true
 					for isRunning {
-						var inputLogin int
-						fmt.Println("Silahkan kembali ke menu dengan mengetik angka 1")
-						fmt.Print("Masukkan angka:")
-						fmt.Scanln(&inputLogin)
-						if inputLogin == 1 {
-							isRunning = false
+						var hp uint
+						var seeAcc users.Users
+						var balance int64
+						hp = loggedIn.HP
+						fmt.Println("Berikut Nomor HP :", loggedIn.HP)
+						seeAcc, balance, err := users.SeeAnotherAcc(database, hp)
+						if err == nil {
+							balance = users.SumBalance(seeAcc.Userbalances)
+							var inputLogin int
+							fmt.Println("Berikut Data User Tersebut: ")
+							fmt.Println("Nama: ", seeAcc.Nama)
+							fmt.Println("Nomor HP: ", seeAcc.HP)
+							fmt.Println("Alamat: ", seeAcc.Alamat)
+							fmt.Println("Balance:", balance)
+							fmt.Println("Silahkan kembali ke menu dengan mengetik angka 1")
+							fmt.Print("Masukkan angka:")
+							fmt.Scanln(&inputLogin)
+							if inputLogin == 1 {
+								isRunning = false
+							}
+						} else {
+							fmt.Println("Error:", err)
 						}
 					}
 				case 2:
