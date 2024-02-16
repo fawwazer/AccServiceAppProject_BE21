@@ -111,7 +111,6 @@ func main() {
 					var deleteAccount users.Users
 					var pilih int8
 					deleteAccount.HP = loggedIn.HP
-					fmt.Print("Masukkan Nomor HP: ")
 					fmt.Println("1. Yes")
 					fmt.Println("2. No")
 					fmt.Scanln(&pilih)
@@ -195,10 +194,8 @@ func main() {
 					for isRunning {
 						var hp uint
 						var History users.Users
-						fmt.Println("Untuk Melihat User Lain Mohon Input No HP")
-						fmt.Println("Masukkan No HP: ")
+						fmt.Println("No HP: ", loggedIn.HP)
 						hp = loggedIn.HP
-						fmt.Scanln(&hp)
 						History, balance, err := users.SeeAnotherAcc(database, hp)
 						if err == nil {
 							balance = users.SumBalance(History.Userbalances)
@@ -261,7 +258,7 @@ func main() {
 					// Implement the logic here
 					var isRunning bool = true
 					for isRunning {
-						var hp string
+						var hp uint
 						var seeAcc users.Users
 						fmt.Println("Untuk Melihat User Lain Mohon Input No HP")
 						fmt.Println("Masukkan No HP: ")

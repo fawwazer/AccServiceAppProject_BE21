@@ -166,7 +166,7 @@ func (u *Users) DeleteAcc(connection *gorm.DB, hp uint) (bool, error) {
 	return query.RowsAffected > 0, nil
 }
 
-func SeeAnotherAcc(connection *gorm.DB, hp string) (Users, int64, error) {
+func SeeAnotherAcc(connection *gorm.DB, hp uint) (Users, int64, error) {
 	var user Users
 
 	// Fetch the user's data including their balance records
@@ -184,7 +184,7 @@ func SeeAnotherAcc(connection *gorm.DB, hp string) (Users, int64, error) {
 	return user, 0, nil
 }
 
-func Historytopup(connection *gorm.DB, hp string) (string, error) {
+func Historytopup(connection *gorm.DB, hp uint) (string, error) {
 	var result Users
 
 	err := connection.Where("hp = ?", hp).Preload("Userbalances").First(&result).Error
@@ -209,7 +209,7 @@ func Historytopup(connection *gorm.DB, hp string) (string, error) {
 	return history, nil
 }
 
-func Historytransfer(connection *gorm.DB, hp string) (string, error) {
+func Historytransfer(connection *gorm.DB, hp uint) (string, error) {
 	var result Users
 
 	err := connection.Where("hp = ?", hp).Preload("Userbalances").First(&result).Error
