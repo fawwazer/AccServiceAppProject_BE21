@@ -243,3 +243,22 @@ func SumBalance(userbalances []UserBalance) int64 {
 	}
 	return sum
 }
+
+func (u *Users) UpdateAcc(connection *gorm.DB, newhp uint, newpassword string, newnama string, newalamat string) (bool, error) {
+	query := connection.Table("Users").Where("hp = ?", newhp).Updates(map[string]interface{}{
+		"hp":       newhp,
+		"password": newpassword,
+		"nama":     newnama,
+		"alamat":   newalamat,
+	})
+	if query.Error != nil {
+		return false, query.Error
+	}
+
+	//check rows
+	if query.RowsAffected == 0 {
+		return false, nil //rows tidak berubah
+	}
+
+	return true, nil
+}
